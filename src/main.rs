@@ -257,7 +257,8 @@ pub async fn run_coach_pipeline(
     };
 
     // Load active profile from profiles.json
-    if let Ok(profile_data) = std::fs::read_to_string("profiles.json") {
+    let profiles_path = std::env::var("PROFILES_PATH").unwrap_or_else(|_| "data/profiles.json".to_string());
+    if let Ok(profile_data) = std::fs::read_to_string(&profiles_path) {
         if let Ok(json) = serde_json::from_str::<serde_json::Value>(&profile_data) {
             if let Some(active_name) = json.get("active_profile").and_then(|v| v.as_str()) {
                 println!("Loaded active equipment profile: {}", active_name);
@@ -318,7 +319,7 @@ pub async fn run_coach_pipeline(
     }
 
     if let Ok(gemini_key) = std::env::var("GEMINI_API_KEY") {
-        println!("\nGEMINI_API_KEY found! Generating workout via Gemini 3.1 Pro Preview...");
+        println!("\nGEMINI_API_KEY found! Generating workout via Gemini API...");
 
         // Initialize AI Client
         let gemini_model = std::env::var("GEMINI_MODEL")
